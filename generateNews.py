@@ -2,9 +2,10 @@
 #-*- coding:utf8 -*-
 # CCTV News generater
 # by MeroMoon
-# last edit: 2020.5.16
+# last edit: 2020.5.17
 
-import sys, os, math
+import sys
+import os
 from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageChops
 
 NEWSBACK_IMG = sys.path[0] + "/bin/back.png"
@@ -17,12 +18,13 @@ TITLE_COLOR = (225, 193, 12, 255)
 DOWN_COLOR = (247, 255, 247, 255)
 
 
+# 扫描目录中的图片
 def scan_img():
     print('scanning...')
     for file in os.listdir(IMG_DIR):
         if file != "back.png":
-            f, h = os.path.splitext(file)
-            if h == '.png' or h == '.jpg':
+            h = os.path.splitext(file)
+            if h[1] == '.png' or h[1] == '.jpg':
                 print('img found: ', file)
                 return file
     print('Error: 没有找到新闻图片\n')
@@ -32,13 +34,13 @@ def add_font():
     img = Image.open(NEWSBACK_IMG)
     drawObj = ImageDraw.Draw(img)
 
-    title_font = ImageFont.truetype('C:/Windows/Fonts/AdobeHeitiStd-Regular.otf',25)
+    title_font = ImageFont.truetype('C:/Windows/Fonts/AdobeHeitiStd-Regular.otf',26)
     down_font = ImageFont.truetype('C:/Windows/Fonts/AdobeHeitiStd-Regular.otf',15)
     title_text = input('请输入标题：  ')
     down_text = input('请输入底端文字：  ')
     
-    drawObj.text(TITLE_POS,title_text,TITLE_COLOR,font=title_font)
-    drawObj.text(DOWN_POS,down_text,DOWN_COLOR,font=down_font)
+    drawObj.text(TITLE_POS,title_text,TITLE_COLOR,title_font, None, 0, 'left', None, None, None, 1, 'black')
+    drawObj.text(DOWN_POS, down_text, DOWN_COLOR, down_font)
     
     return img
 
@@ -56,8 +58,6 @@ def deal_img():
     out = Image.alpha_composite(blank, img)
     out.save(SAVE_DIR + 'output.png','png')
     out.show()
-
-
 
 if __name__ == "__main__":
     deal_img()
