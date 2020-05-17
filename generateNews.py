@@ -37,7 +37,7 @@ def scan_img():
     print('Error: 没有找到新闻图片，程序将自动生成空白图片\n')
     img = Image.new('RGBA', MAX_SIZE02, 'white')
     file = 'z_autogen.png'
-    img.save(IMG_DIR + file)2
+    img.save(IMG_DIR + file)
     return file
 
 # 合成新闻主界面添加文字信息
