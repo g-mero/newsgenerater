@@ -3,3 +3,4 @@ generateInfomaps.py
 /build/
 /__pycache__/
 /dist/
+output/output.png
