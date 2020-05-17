@@ -1,7 +1,5 @@
 generateInfomaps.py
 *.spec
-build
-__pycache__
-build
-dist
-dist/*
+/build/
+/__pycache__/
+/dist/
