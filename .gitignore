@@ -3,6 +3,7 @@ generateInfomaps.py
 /build/
 /__pycache__/
 /dist/
+!/input/
 /input/*.jpg
 /.vscode/
 tempCodeRunnerFile.py
