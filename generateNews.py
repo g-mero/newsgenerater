@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+# !/usr/bin/env python3
 #-*- coding:utf8 -*-
 # CCTV News generater
 # by MeroMoon
@@ -8,14 +8,17 @@
 import sys
 import os
 import random
+import cv2
 from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageChops
 
 NEWSBACK_IMG = "./bin/back01.png"
 NEWSBACK02_IMG = "./bin/back02.png"
 BACKDOWN_IMG = "./bin/backdown.png"
+# FACE_DATA = "./bin/haarcascade_frontalcatface.xml"
+FACE_DATA = "C:/Users/meromoon/AppData/Local/Programs/Python/Python38/Lib/site-packages/cv2/data/haarcascade_frontalface_default.xml"
 SAVE_DIR = "./output/"
-IMG_DIR = "./bin/"
-MAX_SIZE01 = (195, 180)
+IMG_DIR = "./input/"
+MAX_SIZE01 = (220, 180)
 MAX_SIZE02 = (478, 359)
 NAME_POS = (185, 531)
 TITLE_POS = (90, 295)
@@ -25,6 +28,40 @@ TITLE_COLOR = (225, 193, 12, 255)
 DOWN_COLOR = (247, 255, 247, 255)  # same as titlecolor in method2
 
 
+
+# 人脸识别 返回人脸坐标等信息
+def face_get(file):
+    print('人脸识别开始...')
+    filepath = IMG_DIR + file
+    img = cv2.imread(filepath, cv2.IMREAD_GRAYSCALE)  # 读取图片
+
+    print(os.path.abspath(FACE_DATA))
+    classifier = cv2.CascadeClassifier(FACE_DATA)
+    faceRects = classifier.detectMultiScale(
+    img, scaleFactor=1.2, minNeighbors=3, minSize=(32, 32))
+
+    if len(faceRects):  # 大于0则检测到人脸
+        print('检测到人脸，开始裁剪...')
+        x, y, h, w = faceRects[0]  # 只处理检测到的第一个人脸
+        imgh, imgw = img.shape
+        bc = 0.25  # 人脸补偿系数
+        if imgw > imgh:
+            a = int((x + w) * 0.5 - imgh * 0.6)
+            if a < 0:
+                a = 0
+            a += int(bc * h)  
+            b = int(a + 1.2 * imgh)
+            return a, b, 1
+        else:
+            a = int(0.5 * (y+h) - imgw / 2.4)
+            if a < 0:
+                a = 0
+            a += int(bc * h)
+            b = int(imgw / 1.2 + a)
+            return a, b, 2
+    else:
+        return 0, 0, 0
+        
 # 扫描目录中的图片
 def scan_img():
     print('scanning...')
@@ -59,7 +96,7 @@ def add_font(c = 1):
         img = img.resize((img.size[0]*2, img.size[1]*2))
         print(img.size)
         drawObj = ImageDraw.Draw(img)
-        title_color = DOWN_COLOR  # 这里的TITLE_COLOR被重置为本地变量
+        title_color = DOWN_COLOR
         name_text = input('请输入采访人名字（可留空）：')
         if not name_text.isspace():
             name_font = ImageFont.truetype('C:/Windows/Fonts/msyh.ttc',32)
@@ -82,10 +119,22 @@ def add_font(c = 1):
 
     return img
 
+# 合成图片与新闻主界面
 def deal_img(c = 1):
-    news = Image.open(IMG_DIR + scan_img())
+    imgfile = scan_img()
+    news = Image.open(IMG_DIR + imgfile)
     img = add_font(c)
+    w, h = news.size
     # drawit = ImageDraw.Draw(news)
+    if w / h < 0.9 or w / h > 1.3:
+        a, b, option = face_get(imgfile)
+        if option:
+            if option == 1:
+                news = news.crop((a, 0, b, h))
+            else:
+                news = news.crop((0, a, w, b))
+    # news.show()
+    # os.system('pause')
     w, h = news.size
     if c == 1:
         newspos = (5, 30)
@@ -94,10 +143,7 @@ def deal_img(c = 1):
         newspos = (0, 0)
         maxsize = MAX_SIZE02
     blank = Image.new('RGBA', img.size, 'white')
-    if w >= h:
-        news = news.resize((int(w/h*maxsize[1]), maxsize[1]))
-    else:
-        news = news.resize((maxsize[0], int(h/w*maxsize[0])))
+    news = news.resize((maxsize[0], int(h/w*maxsize[0])))
     blank.paste(news, newspos)
     out = Image.alpha_composite(blank, img)
     out.save(SAVE_DIR + 'output.png','png')

@@ -3,4 +3,9 @@ generateInfomaps.py
 /build/
 /__pycache__/
 /dist/
+/input/*.jpg
+/.vscode/
+tempCodeRunnerFile.py
+test.py
 output/output.png
+.pylintrc
