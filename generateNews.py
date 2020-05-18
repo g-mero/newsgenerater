@@ -35,7 +35,6 @@ def face_get(file):
     filepath = IMG_DIR + file
     img = cv2.imread(filepath, cv2.IMREAD_GRAYSCALE)  # 读取图片
 
-    print(os.path.abspath(FACE_DATA))
     classifier = cv2.CascadeClassifier(FACE_DATA)
     faceRects = classifier.detectMultiScale(
     img, scaleFactor=1.2, minNeighbors=3, minSize=(32, 32))
@@ -105,8 +104,9 @@ def add_font(c = 1):
 
     title_text = input('请输入标题：  ')
     down_text = input('请输入底端文字：  ')
-    if title_text == '' and down_text == '':
+    if title_text == '':
         title_text = '默认标题这只是测试'
+    if down_text == '':
         down_text = '武汉卫健委回应集中核酸检测。  231省区市新增确诊5例本土3例。  安徽工程大学必不可能开学。'
     if len(down_text) >= 21:
         downpos = (DOWN_POS[0] - random.randint(5, 35), DOWN_POS[1])
