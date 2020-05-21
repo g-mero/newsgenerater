@@ -2,7 +2,7 @@
 #-*- coding:utf8 -*-
 # CCTV News generater
 # by MeroMoon
-# last edit: 2020.5.17
+# last edit: 2020.5.18
 
 
 import sys
@@ -40,10 +40,10 @@ def face_get(file):
     img, scaleFactor=1.2, minNeighbors=3, minSize=(32, 32))
 
     if len(faceRects):  # 大于0则检测到人脸
-        print('检测到人脸，开始裁剪...')
+        print('检测到人脸!!')
         x, y, h, w = faceRects[0]  # 只处理检测到的第一个人脸
         imgh, imgw = img.shape
-        bc = 0.25  # 人脸补偿系数
+        bc = 0.26  # 人脸补偿系数
         if imgw > imgh:
             a = int((x + w) * 0.5 - imgh * 0.6)
             if a < 0:
@@ -59,6 +59,7 @@ def face_get(file):
             b = int(imgw / 1.2 + a)
             return a, b, 2
     else:
+        print('未检测到人脸')
         return 0, 0, 0
         
 # 扫描目录中的图片
