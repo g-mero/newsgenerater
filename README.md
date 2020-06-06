@@ -1,3 +1,3 @@
-# CCTV news generater
+# news generater
 
 娱乐作用
